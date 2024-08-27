@@ -7,6 +7,11 @@ export interface UserCreateBody {
   background?: string;
 };
 
+export interface UserLoginBody {
+  email: string;
+  password: string;
+};
+
 export interface IResponseCreateService {
   user: {
     _id: string;

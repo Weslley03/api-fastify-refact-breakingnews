@@ -2,7 +2,7 @@ import { User } from "../models/user-model";
 import { IResponseCreateService } from "../types/user.types";
 import jwt from 'jsonwebtoken';
 
-const statusFailed = (messageError: string) => {
+export const statusFailed = (messageError: string) => {
   return {
     user: {
       _id: '',
