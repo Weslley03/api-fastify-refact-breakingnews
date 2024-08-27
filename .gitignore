@@ -1,0 +1,10 @@
+/dist
+/build
+/out
+*.js
+*.js.map
+
+node_modules
+npm-debug.log
+
+.env
