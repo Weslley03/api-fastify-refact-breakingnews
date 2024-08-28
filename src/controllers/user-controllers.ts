@@ -1,6 +1,13 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { generateToken, createUserService, updateUserService, GetByIdService, findAllUserService } from "../services/user.services";
 import { IParamsId, UserCreateBody, UserUpdateBody } from "../types/user.types";
+import { 
+  generateToken, 
+  createUserService, 
+  updateUserService, 
+  GetByIdService, 
+  findAllUserService, 
+  deleteUserService 
+} from "../services/user.services";
 
 export async function userCreate(request: FastifyRequest<{ Body: UserCreateBody }>, reply: FastifyReply) {
   try{
@@ -81,5 +88,17 @@ export async function userFindAll(request: FastifyRequest, reply: FastifyReply){
   }catch(err){
     console.error('houve um erro na execução da função de FINDALL:', err) 
     return reply.status(500).send({ error: 'an error occurred while finding the profile' });
+  };
+};
+
+export async function userRemove(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply) {
+  try{
+    const { id } = request.params; 
+    const deleteResponse = await deleteUserService(id);
+    if(!deleteResponse) return reply.status(500).send({ error: 'an error occurred while delete the profile' });
+    return reply.status(200).send({ message: 'user delete' }); 
+  }catch(err){
+    console.error('houve um erro na execução da função de DELETE:', err) 
+    return reply.status(500).send({ error: 'an error occurred while delete the profile' });
   };
 };

@@ -101,3 +101,13 @@ export async function findAllUserService() {
     console.error(`there was an error in the application service: ${err}`);
   };
 };
+
+export async function deleteUserService(userID: string) {
+  try{
+    return User.findByIdAndDelete(userID);
+  }catch(err){
+    console.error(`there was an error in the application service: ${err}`);
+  };
+};
+
+
