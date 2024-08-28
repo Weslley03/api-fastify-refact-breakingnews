@@ -27,8 +27,9 @@ export async function userCreate(request: FastifyRequest<{ Body: UserCreateBody 
     }; 
     const { user, message, OK } = registerResponse;
     if(!OK) return reply.status(400).send({ message, OK });
-    const usertoken = await generateToken(user._id);
-    return reply.send({ usertoken, message, OK });
+    const tokenUser = await generateToken(user._id);
+    if(!tokenUser) return reply.status(400).send({ message: 'não foi possivel gerar seu token de segurança.' });
+    return reply.send({ user, tokenUser, message, OK });
   }catch(err){
     console.error(`an error occurred while register the user: ${err}`);
     return reply.status(500).send({err: 'an error occurred while register the user'})
@@ -68,11 +69,13 @@ export async function userUpdate(request: FastifyRequest<{ Body: UserUpdateBody,
 
 export const userFindById = async (request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply) => {
   try {
-    const { id } = request.params;
-    if(!id) return reply.status(500).send({ message: 'an error occurred while finding the profile' });
-
-    const getByIdResponse = await GetByIdService(id);
-    const user = getByIdResponse;
+    let { id } = request.params;
+    if(!id){
+      const userID = request.user?.id;
+      const user = await GetByIdService(userID);
+      return reply.status(200).send(user);
+    };
+    const user = await GetByIdService(id);
     return reply.status(200).send({ user });
   } catch (err) {
     reply.status(500).send({ error: 'an error occurred while finding the profile' });

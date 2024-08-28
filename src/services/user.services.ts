@@ -51,20 +51,9 @@ export async function createUserService(bodyData: object): Promise<IResponseCrea
   };
 };
 
-export async function GetByIdService(userID: string): Promise<IResponseGetById | undefined> {
+export async function GetByIdService(userID: string | undefined) {
   try{
-    const user = await User.findById(userID);
-    if (!user) return statusFailed('user not fould');
-    return {
-      user: {
-        _id: user._id.toString(),
-        name: user.name,
-        userName: user.userName,
-        email: user.email,
-        avatar: user.avatar,
-        background: user.background
-        }
-      };
+    return User.findById(userID);
   }catch(err){
     console.error(`there was an error in the application service: ${err}`);
     return undefined;

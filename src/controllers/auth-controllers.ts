@@ -16,8 +16,8 @@ export async function userLogin(request: FastifyRequest<{ Body: UserLoginBody }>
     const { user, message, OK } = loginResponse;
     if(!OK) return reply.status(400).send({ message, OK });
     
-    const userToken = await generateToken(user._id);
-    return reply.status(200).send({ userToken, message, OK });
+    const token = await generateToken(user._id);
+    return reply.status(200).send({ token, message, OK });
   }catch(err){
     console.error(`an error occurred while login the user: ${err}`);
     return reply.status(500).send({err: 'an error occurred while login the userr'})

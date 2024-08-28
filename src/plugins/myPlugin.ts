@@ -6,7 +6,7 @@ import { IParamsId } from '../types/user.types';
 dotenv.config();
 
 interface JwtPayloadWithId extends JwtPayload {
-  id?: string;
+  userId?: string;
 };
 
 const SECRET_JWT = process.env.SECRET_JWT;
@@ -25,14 +25,15 @@ export const authPlugin = async (request: FastifyRequest<{ Params: IParamsId }>,
   try{
     const decoded = verify(token, SECRET_JWT) as JwtPayloadWithId;
 
-    if (typeof decoded === 'object' && decoded.userId) {
+    if (decoded.userId) {
       const user = await GetByIdService(decoded.userId);
+      user
       
-      if (!user || !user.user._id) {
+      if (!user || !user._id) {
         return reply.status(401).send({ message: "user or id invalid" });
       }
 
-      (request as any).user = { id: user.user._id };
+      (request as any).user = { id: user._id };
       return;
     } else {
       return reply.status(401).send({ message: "token invalid or missing ID" });
