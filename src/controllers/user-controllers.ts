@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { generateToken, createUserService, updateUserService } from "../services/user.services";
+import { generateToken, createUserService, updateUserService, GetByIdService, findAllUserService } from "../services/user.services";
 import { IParamsId, UserCreateBody, UserUpdateBody } from "../types/user.types";
 
 export async function userCreate(request: FastifyRequest<{ Body: UserCreateBody }>, reply: FastifyReply) {
@@ -57,4 +57,29 @@ export async function userUpdate(request: FastifyRequest<{ Body: UserUpdateBody,
     console.error('houve um erro na execução da função de UPDATE:', err) 
     return reply.status(500).send({ error: 'an error occurred while updating the profile' });
   }
+};
+
+export const userFindById = async (request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply) => {
+  try {
+    const { id } = request.params;
+    if(!id) return reply.status(500).send({ message: 'an error occurred while finding the profile' });
+
+    const getByIdResponse = await GetByIdService(id);
+    const user = getByIdResponse;
+    return reply.status(200).send({ user });
+  } catch (err) {
+    reply.status(500).send({ error: 'an error occurred while finding the profile' });
+  }
+};
+
+export async function userFindAll(request: FastifyRequest, reply: FastifyReply){
+  try{
+    const users = await findAllUserService();
+    if(!users) return reply.status(400).send({ message: "there are no users to search for" });
+    
+    return reply.send(users);
+  }catch(err){
+    console.error('houve um erro na execução da função de FINDALL:', err) 
+    return reply.status(500).send({ error: 'an error occurred while finding the profile' });
+  };
 };

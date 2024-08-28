@@ -93,3 +93,11 @@ export async function updateUserService(userID: string, userForUpdate: UserUpdat
     return undefined;
   }
 };
+
+export async function findAllUserService() {
+  try{
+    return User.find().select('_id name userName email');
+  }catch(err){
+    console.error(`there was an error in the application service: ${err}`);
+  };
+};
