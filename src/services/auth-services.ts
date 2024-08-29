@@ -1,6 +1,6 @@
 import { IUser, User } from "../models/user-model"
 import bcrypt from "bcrypt";
-import { statusFailed } from "./user.services";
+import { statusFailed } from "./user-services";
 
 export async function loginUserService(email: string, password: string){
   try{

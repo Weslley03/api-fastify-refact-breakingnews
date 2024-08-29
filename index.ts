@@ -20,6 +20,9 @@ server.register(userRoutes, { prefix: '/users' });
 import authRoutes from './src/routes/auth-routes';
 server.register(authRoutes, { prefix: '/auth' });
 
+import newsRoutes from './src/routes/news-routes';
+server.register(newsRoutes, { prefix: '/news' });
+
 server.listen({port: 8080, host: '127.0.0.1'}, (err, address) => {
   if(err){
     console.log(`houve um erro ao rodar a aplicação: ${err}`);
