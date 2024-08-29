@@ -7,7 +7,7 @@ import {
   GetByIdService, 
   findAllUserService, 
   deleteUserService 
-} from "../services/user.services";
+} from "../services/user-services";
 
 export async function userCreate(request: FastifyRequest<{ Body: UserCreateBody }>, reply: FastifyReply) {
   try{
@@ -18,17 +18,21 @@ export async function userCreate(request: FastifyRequest<{ Body: UserCreateBody 
         OK: false,
       });
     };
-    const registerResponse  = await createUserService(request.body);
+    
+    const registerResponse = await createUserService(request.body);
     if(!registerResponse){
       return reply.status(500).send({
         message: "an error occurred while trying to register",
         OK: false,
       });
     }; 
+
     const { user, message, OK } = registerResponse;
     if(!OK) return reply.status(400).send({ message, OK });
+    
     const tokenUser = await generateToken(user._id);
     if(!tokenUser) return reply.status(400).send({ message: 'não foi possivel gerar seu token de segurança.' });
+    
     return reply.send({ user, tokenUser, message, OK });
   }catch(err){
     console.error(`an error occurred while register the user: ${err}`);

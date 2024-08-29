@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { GetByIdService } from '../services/user.services';
+import { GetByIdService } from '../services/user-services';
 import { verify, JwtPayload  } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { IParamsId } from '../types/user.types';
