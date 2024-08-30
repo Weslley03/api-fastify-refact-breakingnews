@@ -1,15 +1,21 @@
 import { IParamsId } from "./user.types";
 
-export interface NewsCreateBody {
+export interface NewsCreateBody { //OK
   title: string;
   text: string;
   banner?: string;
 };
 
-export interface IResponseCreateService {
+export interface IResponseMessageandOK { //OK
   message: string;
   OK: boolean;
 };
+
+export interface IResponseLikeNewsById { //OK
+  message: string;
+  OK: boolean;
+  ok: boolean;
+}
 
 export interface IComment {
   commentId: string;

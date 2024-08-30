@@ -1,10 +1,10 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { CombinedParamsForRemoveComment, INewsDocument, IUpdateNewsBody, IUpdateValidation, NewsCreateBody, NewsUpdateBody, PaginationQuery, TitleParams } from "../types/news-types";
-import { countNewsServic, createNewsService, findAllNewsService, findByIdService, findByIdServiceSimple, findByTitleService, findByUserService, findCommentById, findTopNewsService, removeCommentService, updateNewsService } from "../services/news-services";
+import { CombinedParamsForRemoveComment, INewsDocument, IResponseMessageandOK, IUpdateNewsBody, IUpdateValidation, NewsCreateBody, NewsUpdateBody, PaginationQuery, TitleParams } from "../types/news-types";
+import { countNewsServic, createNewsService, deleteLikeNewsByIdService, deleteNewsByIdService, findAllNewsService, findByIdService, findByIdServiceSimple, findByTitleService, findByUserService, findCommentById, findTopNewsService, likeNewsByIdService, removeCommentService, updateNewsService } from "../services/news-services";
 import { Readable } from "stream";
 import { IParamsId } from "../types/user.types";
 
-export async function newsCreate(request:FastifyRequest<{Body: NewsCreateBody}>, reply: FastifyReply){
+export async function newsCreate(request:FastifyRequest<{Body: NewsCreateBody}>, reply: FastifyReply){ //OK
   try{
     const { title, text, banner } = request.body;
     const userID = request.user?.id;
@@ -33,7 +33,7 @@ export async function newsCreate(request:FastifyRequest<{Body: NewsCreateBody}>,
   };
 };
 
-export async function newsFindAll(request:FastifyRequest<{ Querystring: PaginationQuery }>, reply: FastifyReply): Promise<void>{
+export async function newsFindAll(request:FastifyRequest<{ Querystring: PaginationQuery }>, reply: FastifyReply): Promise<void>{ //OK
   try{
     const limit: number = parseInt(request.query.limit || '6', 10);
     const offset: number = parseInt(request.query.offset || '1', 10);
@@ -333,5 +333,56 @@ export async function updateNews(request: FastifyRequest<{ Params: IParamsId, Bo
   }catch(err){
     console.error('error while updateNews news:', err);
     reply.status(500).send({ message: "An error occurred while updateNews the news" });
+  };
+};
+
+export async function deleteNewsById(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){ //OK
+  try{
+    const idNews = request.params;
+    const userID = request.user?.id;
+
+    const news = await findByIdServiceSimple(idNews);
+
+    if(!news) return reply.status(500).send({ message: "it was not possible to perform this task" });
+
+    if (news?.user.toString() != userID?.toString()) {
+      return reply
+        .status(404)
+        .send({ message: "you have not permission for delete this user" });
+    };
+
+    const deleteResponse: IResponseMessageandOK | undefined = await deleteNewsByIdService(idNews);
+    if(!deleteResponse){
+      return reply.status(500).send({
+        message: "an error occurred while trying to register",
+        OK: false,
+      });
+    }; 
+
+    const { message, OK } = deleteResponse;
+
+    return reply.send({ message, OK });
+  }catch(err){
+    console.error(`an error occurred while deleteNewsById this news: ${err}`);
+    return reply.status(500).send({err: 'an error occurred while deleteNewsById this news'});
+  };
+};
+
+export async function likeNewsById(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply) { //OK
+  try{
+    const idNews = request.params;
+    const userID = request.user?.id;
+    if(!userID) return reply.send({ message: 'o user não está autenticado.', OK: false });
+
+    const { message, OK, ok}  = await likeNewsByIdService(idNews, userID);
+    if (ok === false) {
+      await deleteLikeNewsByIdService(idNews, userID);
+      return reply.status(200).send({ message: `post DESCURTIDO com sucesso.` });
+    }
+    
+    return reply.send({ message, OK });
+  }catch(err){
+    console.error(`an error occurred while deleteNewslikeNewsByIdById this news: ${err}`);
+    return reply.status(500).send({err: 'an error occurred while likeNewsById this news'});
   };
 };

@@ -1,9 +1,9 @@
 import { INews, News } from "../models/news-model";
-import { CombinedParamsForRemoveComment, INewsDocument, IResponseCreateService, IUpdateNewsBody, NewsUpdateBody } from "../types/news-types";
+import { CombinedParamsForRemoveComment, INewsDocument, IResponseLikeNewsById, IResponseMessageandOK, IUpdateNewsBody, NewsUpdateBody } from "../types/news-types";
 import { statusFailed } from "./user-services";
 import { IParamsId } from "../types/user.types";
 
-export async function createNewsService(bodyData: object): Promise<IResponseCreateService | undefined>{
+export async function createNewsService(bodyData: object): Promise<IResponseMessageandOK | undefined>{
   try{
     const news = await News.create(bodyData)
     if(!news) return statusFailed('could not create news');
@@ -115,7 +115,7 @@ export async function findByIdService(idNews: IParamsId): Promise<INewsDocument 
   };
 };
 
-export async function updateNewsService(idNews: IParamsId, newsForUpdate: NewsUpdateBody): Promise<IResponseCreateService | undefined> {
+export async function updateNewsService(idNews: IParamsId, newsForUpdate: NewsUpdateBody): Promise<IResponseMessageandOK | undefined> {
   try{
     const ID = idNews.id;
     const upadate = await News.findByIdAndUpdate(ID, newsForUpdate, { new: true }).exec();
@@ -127,6 +127,75 @@ export async function updateNewsService(idNews: IParamsId, newsForUpdate: NewsUp
     }
   }catch(err){
     console.error('error updateNewsService news', err);
+    return undefined;
+  };
+};
+
+export async function deleteNewsByIdService(idNews: IParamsId): Promise<IResponseMessageandOK | undefined> { //OK
+  try{
+    const IDNEWS = idNews.id;
+    
+    const response = await News.findByIdAndDelete({ _id: IDNEWS });
+    if (!response) return statusFailed('could not delte news');
+  
+    return {
+      message: 'DELETE NEWS OK',
+      OK: true,
+    }
+  }catch(err){
+    console.error(`there was an error in the application service: ${err}`);
+    return undefined;
+  }
+};
+
+export async function likeNewsByIdService (idNews: IParamsId, userLiked: string | undefined): Promise<IResponseLikeNewsById> { //OK
+  try {
+    const IDNEWS = idNews.id.toString();
+    const IDUSER = userLiked?.toString();
+    
+    const response = await News.findOneAndUpdate( { 
+     _id: IDNEWS, 
+     'likes.userLiked': { $nin: [IDUSER] } },
+     { $push: { likes: { userLiked: IDUSER, created: new Date() } } }, { new: true, upsert: false } );
+    
+    if (!response) {
+      return{
+        message: 'function like pass.',
+        OK: true,
+        ok: false
+      }
+    }
+    
+    return{
+      message: 'function like pass.',
+      OK: true,
+      ok: true
+    };
+  }catch (err) {
+    console.error(`there was an error in the application service: ${err}`);
+    return{
+      message: 'function like NOpass.',
+      OK: false,
+      ok: false
+    };
+  }
+};
+
+export async function deleteLikeNewsByIdService(idNews: IParamsId, userLiked: string | undefined): Promise<IResponseMessageandOK | undefined>{ //OK
+  try{
+    const IDNEWS = idNews.id.toString();
+    const IDUSER = userLiked?.toString();
+
+    const response = await News.findOneAndUpdate( { _id: IDNEWS }, { $pull: { likes: { userLiked: IDUSER } } } );
+
+    if (!response) return statusFailed('could not deleteLikeNewsById news');
+    return {
+      message: 'DESCURTIDO OK',
+      OK: true,
+    };
+
+  }catch(err){
+    console.error(`there was an error in the application service: ${err}`);
     return undefined;
   };
 };
