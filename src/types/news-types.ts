@@ -39,22 +39,6 @@ export interface INewsDocument { //OK
   };
 };
 
-export type NewsDocumentsResponse = INewsDocument & IResponseMessageandOK; //OK
-
-
-
-export interface IComment {
-  commentId: string;
-  userId: string;
-  comment: string;
-  createdAt: any;
-}
-
-export interface IUpdateValidation {
-  _id: string;
-  user: string;
-};
-
 export interface IMyNews {
   _id: string;
   title: string;
@@ -97,5 +81,7 @@ export interface NewsUpdateBody {
   text?: string;
   banner?: string;
 };
+
+export type NewsDocumentsResponse = INewsDocument & IResponseMessageandOK;
 
 export type CombinedParamsForRemoveComment = INewsIdParams & CommentIdParams & IParamsId;

@@ -1,7 +1,17 @@
-import { INews, News } from "../models/news-model";
-import { CombinedParamsForRemoveComment, IBodyCommentAdd, IMyNews, INewsDocument, IResponseLikeNewsById, IResponseMessageandOK, IUpdateNewsBody, NewsDocumentsResponse, NewsUpdateBody } from "../types/news-types";
+import { News } from "../models/news-model";
 import { statusFailed } from "./user-services";
 import { IParamsId } from "../types/user.types";
+import { 
+  CombinedParamsForRemoveComment, 
+  IBodyCommentAdd, 
+  IMyNews, 
+  INewsDocument, 
+  IResponseLikeNewsById, 
+  IResponseMessageandOK, 
+  IUpdateNewsBody, 
+  NewsDocumentsResponse, 
+  NewsUpdateBody 
+} from "../types/news-types";
 
 export async function createNewsService(bodyData: object): Promise<IResponseMessageandOK | undefined>{
   try{
@@ -18,7 +28,7 @@ export async function createNewsService(bodyData: object): Promise<IResponseMess
   };
 };
 
-export async function findAllNewsService(limit:number, offset: number): Promise<INewsDocument[]> {
+export async function findAllNewsService(limit:number, offset: number): Promise<INewsDocument[]> { //OK 
   try{
     const newsCursor = News.find()
       .sort({ _id: -1 }) 
@@ -36,7 +46,7 @@ export async function findAllNewsService(limit:number, offset: number): Promise<
   };
 };
 
-export async function findTopNewsService(): Promise<NewsDocumentsResponse | IMyNews> {
+export async function findTopNewsService(): Promise<NewsDocumentsResponse | IMyNews> { //OK
   try{
     const topNewsResponse = await News.findOne().sort({_id: -1}).populate('user') as unknown as INewsDocument
     if(!topNewsResponse) throw new Error('top news response is null or undefined.');
@@ -80,19 +90,19 @@ export async function findTopNewsService(): Promise<NewsDocumentsResponse | IMyN
   };
 };
 
-export async function findByTitleService(title:string): Promise<INewsDocument[]>{
+export async function findByTitleService(title:string): Promise<INewsDocument[]>{ //OK
   return News.find({
     title: { $regex: `${title || ''}`, $options: 'i' }
   })
     .sort({ _id: -1 }).populate('user') as unknown as Promise<INewsDocument[]>
 };
 
-export async function countNewsServic() {
+export async function countNewsServic() { //OK
   const count = await News.countDocuments().exec();
   return count;
 };
 
-export async function findByUserService(userId: string | undefined): Promise<INewsDocument[]>{
+export async function findByUserService(userId: string | undefined): Promise<INewsDocument[]>{ //OK
   return News.find({
     user: userId }).sort({ _id: -1 }).sort({ _id: -1 })
     .populate('user') as unknown as Promise<INewsDocument[]>
@@ -107,7 +117,7 @@ export async function findCommentById(idNews: IParamsId | undefined): Promise<IN
   };
 };
 
-export async function findByIdServiceSimple(idNews: IParamsId) {
+export async function findByIdServiceSimple(idNews: IParamsId) { //OK
   try{
     const ID = idNews.id;
     const news = await News.findById(ID)
@@ -117,7 +127,7 @@ export async function findByIdServiceSimple(idNews: IParamsId) {
   };  
 };
 
-export async function removeCommentService(dataObject: CombinedParamsForRemoveComment): Promise<INewsDocument | null> {
+export async function removeCommentService(dataObject: CombinedParamsForRemoveComment): Promise<INewsDocument | null> { //OK
   try{
     const { commentId, id, idNews } = dataObject;
 

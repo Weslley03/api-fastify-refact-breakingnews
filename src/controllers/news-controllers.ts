@@ -1,8 +1,35 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { CombinedParamsForRemoveComment, IBodyCommentAdd, INewsDocument, IResponseMessageandOK, IUpdateNewsBody, IUpdateValidation, NewsCreateBody, NewsUpdateBody, PaginationQuery, TitleParams } from "../types/news-types";
-import { addCommentService, countNewsServic, createNewsService, deleteLikeNewsByIdService, deleteNewsByIdService, findAllNewsService, findByIdService, findByIdServiceSimple, findByTitleService, findByUserService, findCommentById, findTopNewsService, likeNewsByIdService, removeCommentService, updateNewsService } from "../services/news-services";
 import { Readable } from "stream";
 import { IParamsId } from "../types/user.types";
+import { 
+  CombinedParamsForRemoveComment, 
+  IBodyCommentAdd, 
+  INewsDocument, 
+  IResponseMessageandOK, 
+  IUpdateNewsBody, 
+  NewsCreateBody, 
+  NewsUpdateBody, 
+  PaginationQuery, 
+  TitleParams 
+} from "../types/news-types";
+import { 
+  addCommentService, 
+  countNewsServic, 
+  createNewsService, 
+  deleteLikeNewsByIdService, 
+  deleteNewsByIdService, 
+  findAllNewsService, 
+  findByIdService, 
+  findByIdServiceSimple, 
+  findByTitleService, 
+  findByUserService, 
+  findCommentById, 
+  findTopNewsService, 
+  likeNewsByIdService, 
+  removeCommentService, 
+  updateNewsService 
+} from "../services/news-services";
+
 
 export async function newsCreate(request:FastifyRequest<{Body: NewsCreateBody}>, reply: FastifyReply){ //OK
   try{
@@ -91,7 +118,7 @@ export async function newsFindAll(request:FastifyRequest<{ Querystring: Paginati
   };
 };
 
-export async function findTopNews(request: FastifyRequest, reply: FastifyReply){  
+export async function findTopNews(request: FastifyRequest, reply: FastifyReply){ //OK  
   try{
     const topNews = await findTopNewsService();
     
@@ -122,7 +149,7 @@ export async function findTopNews(request: FastifyRequest, reply: FastifyReply){
   };
 };
 
-export async function findByTitle(request: FastifyRequest<{ Querystring: TitleParams }>, reply:FastifyReply){
+export async function findByTitle(request: FastifyRequest<{ Querystring: TitleParams }>, reply:FastifyReply){ //OK
   try{
     const title = request.query.title;  
     
@@ -157,7 +184,7 @@ export async function findByTitle(request: FastifyRequest<{ Querystring: TitlePa
   };
 };
 
-export async function findByUser(request: FastifyRequest, reply: FastifyReply) {
+export async function findByUser(request: FastifyRequest, reply: FastifyReply) { //OK
   try{
    const userID = request.user?.id;
    const newsFindUser: INewsDocument[] = await findByUserService(userID);
@@ -191,7 +218,7 @@ export async function findByUser(request: FastifyRequest, reply: FastifyReply) {
   };
 };
 
-export async function findCommentByIdNews(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){
+export async function findCommentByIdNews(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){ //OK
   try{
     const idNews: IParamsId = request.params;
     
@@ -214,7 +241,7 @@ export async function findCommentByIdNews(request: FastifyRequest<{ Params: IPar
   };
 };
 
-export async function likeCheck(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){
+export async function likeCheck(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){ //OK
   try{
     const idNews = request.params; 
     const news =  await findByIdServiceSimple(idNews);
@@ -258,7 +285,7 @@ export async function removeComment(request: FastifyRequest<{ Params: CombinedPa
     if(updatedNews.comments.userId !==  id) return reply.status(500).send({ message: "you can't delete this comment", OK: false });
 
     reply.status(200).send({ 
-      message: "Comment successfully removed", 
+      message: "comment successfully removed", 
       OK: true 
     });
 
@@ -325,7 +352,7 @@ export async function updateNews(request: FastifyRequest<{ Params: IParamsId, Bo
     if (!updateResponse) {
       return reply
         .status(404)
-        .send({ message: "não foi ossivel atualizar a noticia" });
+        .send({ message: "não foi Possivel atualizar a noticia" });
     };
 
     return reply.status(200).send({ message: "noticia atualizada com sucesso" });
