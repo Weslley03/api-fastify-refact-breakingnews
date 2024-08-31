@@ -1,9 +1,19 @@
-import { INews, News } from "../models/news-model";
-import { CombinedParamsForRemoveComment, INewsDocument, IResponseCreateService, IUpdateNewsBody, NewsUpdateBody } from "../types/news-types";
+import { News } from "../models/news-model";
 import { statusFailed } from "./user-services";
 import { IParamsId } from "../types/user.types";
+import { 
+  CombinedParamsForRemoveComment, 
+  IBodyCommentAdd, 
+  IMyNews, 
+  INewsDocument, 
+  IResponseLikeNewsById, 
+  IResponseMessageandOK, 
+  IUpdateNewsBody, 
+  NewsDocumentsResponse, 
+  NewsUpdateBody 
+} from "../types/news-types";
 
-export async function createNewsService(bodyData: object): Promise<IResponseCreateService | undefined>{
+export async function createNewsService(bodyData: object): Promise<IResponseMessageandOK | undefined>{
   try{
     const news = await News.create(bodyData)
     if(!news) return statusFailed('could not create news');
@@ -18,7 +28,7 @@ export async function createNewsService(bodyData: object): Promise<IResponseCrea
   };
 };
 
-export async function findAllNewsService(limit:number, offset: number): Promise<INewsDocument[]> {
+export async function findAllNewsService(limit:number, offset: number): Promise<INewsDocument[]> { //OK 
   try{
     const newsCursor = News.find()
       .sort({ _id: -1 }) 
@@ -36,28 +46,63 @@ export async function findAllNewsService(limit:number, offset: number): Promise<
   };
 };
 
-export async function findTopNewsService(): Promise<INewsDocument | null> {
+export async function findTopNewsService(): Promise<NewsDocumentsResponse | IMyNews> { //OK
   try{
-    return News.findOne().sort({_id: -1}).populate('user') as Promise<INewsDocument | null>
+    const topNewsResponse = await News.findOne().sort({_id: -1}).populate('user') as unknown as INewsDocument
+    if(!topNewsResponse) throw new Error('top news response is null or undefined.');
+
+    return {
+      _id: topNewsResponse._id,
+      title: topNewsResponse.title,
+      text: topNewsResponse.text,
+      banner: topNewsResponse.banner,
+      likes: topNewsResponse.likes, 
+      comments: topNewsResponse.comments,
+      user: {
+        username: topNewsResponse.user.username,
+        avatar: topNewsResponse.user.avatar,
+      },
+      message: 'error fetching news articles',
+      OK: false,
+    }
+
   }catch(err){
     console.error('error fetching news articles:', err);
-    throw new Error('failed to fetch news articles');
+    return{
+      _id: '',
+      title: '',
+      text: '',
+      banner: '',
+      likes: '', 
+      comments: {
+        commentId: '',
+        userId: '',
+        comment: '',
+        createdAt: '',
+      },
+      user: {
+        username: '',
+        avatar: '',
+      },
+      message: 'error fetching news articles',
+      OK: false,
+    }
   };
 };
 
-export async function findByTitleService(title:string): Promise<INewsDocument[]>{
+export async function findByTitleService(title:string): Promise<INewsDocument[]>{ //OK
   return News.find({
     title: { $regex: `${title || ''}`, $options: 'i' }
   })
     .sort({ _id: -1 }).populate('user') as unknown as Promise<INewsDocument[]>
 };
 
-export async function countNewsServic() {
+export async function countNewsServic() { //OK
   const count = await News.countDocuments().exec();
   return count;
 };
 
-export async function findByUserService(userId: string | undefined): Promise<INewsDocument[]>{
+export async function findByUserService(userId: string | undefined): Promise<INewsDocument[]>{ //OK
   return News.find({
     user: userId }).sort({ _id: -1 }).sort({ _id: -1 })
     .populate('user') as unknown as Promise<INewsDocument[]>
@@ -72,7 +117,7 @@ export async function findCommentById(idNews: IParamsId | undefined): Promise<IN
   };
 };
 
-export async function findByIdServiceSimple(idNews: IParamsId) {
+export async function findByIdServiceSimple(idNews: IParamsId) { //OK
   try{
     const ID = idNews.id;
     const news = await News.findById(ID)
@@ -82,7 +127,7 @@ export async function findByIdServiceSimple(idNews: IParamsId) {
   };  
 };
 
-export async function removeCommentService(dataObject: CombinedParamsForRemoveComment): Promise<INewsDocument | null> {
+export async function removeCommentService(dataObject: CombinedParamsForRemoveComment): Promise<INewsDocument | null> { //OK
   try{
     const { commentId, id, idNews } = dataObject;
 
@@ -115,7 +160,7 @@ export async function findByIdService(idNews: IParamsId): Promise<INewsDocument 
   };
 };
 
-export async function updateNewsService(idNews: IParamsId, newsForUpdate: NewsUpdateBody): Promise<IResponseCreateService | undefined> {
+export async function updateNewsService(idNews: IParamsId, newsForUpdate: NewsUpdateBody): Promise<IResponseMessageandOK | undefined> {
   try{
     const ID = idNews.id;
     const upadate = await News.findByIdAndUpdate(ID, newsForUpdate, { new: true }).exec();
@@ -128,5 +173,97 @@ export async function updateNewsService(idNews: IParamsId, newsForUpdate: NewsUp
   }catch(err){
     console.error('error updateNewsService news', err);
     return undefined;
+  };
+};
+
+export async function deleteNewsByIdService(idNews: IParamsId): Promise<IResponseMessageandOK | undefined> { //OK
+  try{
+    const IDNEWS = idNews.id;
+    
+    const response = await News.findByIdAndDelete({ _id: IDNEWS });
+    if (!response) return statusFailed('could not delte news');
+  
+    return {
+      message: 'DELETE NEWS OK',
+      OK: true,
+    }
+  }catch(err){
+    console.error(`there was an error in the application service: ${err}`);
+    return undefined;
+  }
+};
+
+export async function likeNewsByIdService (idNews: IParamsId, userLiked: string | undefined): Promise<IResponseLikeNewsById> { //OK
+  try {
+    const IDNEWS = idNews.id.toString();
+    const IDUSER = userLiked?.toString();
+    
+    const response = await News.findOneAndUpdate( { 
+     _id: IDNEWS, 
+     'likes.userLiked': { $nin: [IDUSER] } },
+     { $push: { likes: { userLiked: IDUSER, created: new Date() } } }, { new: true, upsert: false } );
+    
+    if (!response) {
+      return{
+        message: 'function like pass.',
+        OK: true,
+        ok: false
+      }
+    }
+    
+    return{
+      message: 'function like pass.',
+      OK: true,
+      ok: true
+    };
+  }catch (err) {
+    console.error(`there was an error in the application service: ${err}`);
+    return{
+      message: 'function like NOpass.',
+      OK: false,
+      ok: false
+    };
+  }
+};
+
+export async function deleteLikeNewsByIdService(idNews: IParamsId, userLiked: string | undefined): Promise<IResponseMessageandOK | undefined>{ //OK
+  try{
+    const IDNEWS = idNews.id.toString();
+    const IDUSER = userLiked?.toString();
+
+    const response = await News.findOneAndUpdate( { _id: IDNEWS }, { $pull: { likes: { userLiked: IDUSER } } } );
+
+    if (!response) return statusFailed('could not deleteLikeNewsById news');
+    return {
+      message: 'DESCURTIDO OK',
+      OK: true,
+    };
+
+  }catch(err){
+    console.error(`there was an error in the application service: ${err}`);
+    return undefined;
+  };
+};
+
+export async function addCommentService(userID: string | undefined, idNews: IParamsId, commentBody: IBodyCommentAdd): Promise<IResponseMessageandOK>{ //OK
+  try{
+    const IDNEWS = idNews.id.toString();
+    const IDUSER = userID?.toString();
+    const COMMENTBODY = commentBody.comment;
+    const commentId = Math.floor(Date.now() * Math.random()).toString(36);
+
+    const response = await News.findByIdAndUpdate( { _id: IDNEWS }, { $push: { comments: { commentId, IDUSER, COMMENTBODY, createdAt: new Date()} } } );
+    if (!response) return statusFailed('could not addCommentService news');
+
+    return {
+      message: 'comment adding',
+      OK: true,
+    };
+  }catch(err){
+    console.error(`there was an error in the application service: ${err}`);
+    return {
+      message: 'there was an error in the application service:',
+      OK: false,
+    };
   };
 };

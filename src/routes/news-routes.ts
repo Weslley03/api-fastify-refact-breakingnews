@@ -3,6 +3,7 @@ import { authPlugin } from '../plugins/myPlugin';
 import { CombinedParamsForRemoveComment, NewsCreateBody } from '../types/news-types';
 import { IParamsId } from '../types/user.types';
 import { 
+  deleteNewsById,
   findByTitle, 
   findByUser, 
   findCommentByIdNews, 
@@ -12,7 +13,9 @@ import {
   newsCreate, 
   newsFindAll, 
   removeComment, 
-  updateNews
+  updateNews,
+  likeNewsById,
+  addComment,
 } from '../controllers/news-controllers';
 
 async function newsRoutes(fastify:FastifyInstance) {
@@ -27,6 +30,9 @@ async function newsRoutes(fastify:FastifyInstance) {
   fastify.get("/findId/:id", { preHandler: authPlugin }, findNewsById);
   fastify.get("/findnewsidsimple/:id", findNewsById);
   fastify.patch("/upadate/:id", { preHandler: authPlugin }, updateNews);
+  fastify.delete("/:id", { preHandler: authPlugin }, deleteNewsById);
+  fastify.patch("/like/:id", { preHandler: authPlugin }, likeNewsById);
+  fastify.patch("/comment/:id", { preHandler: authPlugin }, addComment);
 };
 
 export default newsRoutes;  

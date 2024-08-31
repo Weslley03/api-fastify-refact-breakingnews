@@ -1,10 +1,37 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { CombinedParamsForRemoveComment, INewsDocument, IUpdateNewsBody, IUpdateValidation, NewsCreateBody, NewsUpdateBody, PaginationQuery, TitleParams } from "../types/news-types";
-import { countNewsServic, createNewsService, findAllNewsService, findByIdService, findByIdServiceSimple, findByTitleService, findByUserService, findCommentById, findTopNewsService, removeCommentService, updateNewsService } from "../services/news-services";
 import { Readable } from "stream";
 import { IParamsId } from "../types/user.types";
+import { 
+  CombinedParamsForRemoveComment, 
+  IBodyCommentAdd, 
+  INewsDocument, 
+  IResponseMessageandOK, 
+  IUpdateNewsBody, 
+  NewsCreateBody, 
+  NewsUpdateBody, 
+  PaginationQuery, 
+  TitleParams 
+} from "../types/news-types";
+import { 
+  addCommentService, 
+  countNewsServic, 
+  createNewsService, 
+  deleteLikeNewsByIdService, 
+  deleteNewsByIdService, 
+  findAllNewsService, 
+  findByIdService, 
+  findByIdServiceSimple, 
+  findByTitleService, 
+  findByUserService, 
+  findCommentById, 
+  findTopNewsService, 
+  likeNewsByIdService, 
+  removeCommentService, 
+  updateNewsService 
+} from "../services/news-services";
 
-export async function newsCreate(request:FastifyRequest<{Body: NewsCreateBody}>, reply: FastifyReply){
+
+export async function newsCreate(request:FastifyRequest<{Body: NewsCreateBody}>, reply: FastifyReply){ //OK
   try{
     const { title, text, banner } = request.body;
     const userID = request.user?.id;
@@ -33,7 +60,7 @@ export async function newsCreate(request:FastifyRequest<{Body: NewsCreateBody}>,
   };
 };
 
-export async function newsFindAll(request:FastifyRequest<{ Querystring: PaginationQuery }>, reply: FastifyReply): Promise<void>{
+export async function newsFindAll(request:FastifyRequest<{ Querystring: PaginationQuery }>, reply: FastifyReply): Promise<void>{ //OK
   try{
     const limit: number = parseInt(request.query.limit || '6', 10);
     const offset: number = parseInt(request.query.offset || '1', 10);
@@ -91,7 +118,7 @@ export async function newsFindAll(request:FastifyRequest<{ Querystring: Paginati
   };
 };
 
-export async function findTopNews(request: FastifyRequest, reply: FastifyReply){  
+export async function findTopNews(request: FastifyRequest, reply: FastifyReply){ //OK  
   try{
     const topNews = await findTopNewsService();
     
@@ -110,7 +137,6 @@ export async function findTopNews(request: FastifyRequest, reply: FastifyReply){
         banner: topNews.banner,
         likes: topNews.likes,
         comments: topNews.comments,
-        //name: topNews.user.name,
         userName: topNews.user.username,
         userAvatar: topNews.user.avatar,
       },
@@ -123,7 +149,7 @@ export async function findTopNews(request: FastifyRequest, reply: FastifyReply){
   };
 };
 
-export async function findByTitle(request: FastifyRequest<{ Querystring: TitleParams }>, reply:FastifyReply){
+export async function findByTitle(request: FastifyRequest<{ Querystring: TitleParams }>, reply:FastifyReply){ //OK
   try{
     const title = request.query.title;  
     
@@ -158,7 +184,7 @@ export async function findByTitle(request: FastifyRequest<{ Querystring: TitlePa
   };
 };
 
-export async function findByUser(request: FastifyRequest, reply: FastifyReply) {
+export async function findByUser(request: FastifyRequest, reply: FastifyReply) { //OK
   try{
    const userID = request.user?.id;
    const newsFindUser: INewsDocument[] = await findByUserService(userID);
@@ -192,7 +218,7 @@ export async function findByUser(request: FastifyRequest, reply: FastifyReply) {
   };
 };
 
-export async function findCommentByIdNews(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){
+export async function findCommentByIdNews(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){ //OK
   try{
     const idNews: IParamsId = request.params;
     
@@ -215,7 +241,7 @@ export async function findCommentByIdNews(request: FastifyRequest<{ Params: IPar
   };
 };
 
-export async function likeCheck(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){
+export async function likeCheck(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){ //OK
   try{
     const idNews = request.params; 
     const news =  await findByIdServiceSimple(idNews);
@@ -259,7 +285,7 @@ export async function removeComment(request: FastifyRequest<{ Params: CombinedPa
     if(updatedNews.comments.userId !==  id) return reply.status(500).send({ message: "you can't delete this comment", OK: false });
 
     reply.status(200).send({ 
-      message: "Comment successfully removed", 
+      message: "comment successfully removed", 
       OK: true 
     });
 
@@ -326,12 +352,86 @@ export async function updateNews(request: FastifyRequest<{ Params: IParamsId, Bo
     if (!updateResponse) {
       return reply
         .status(404)
-        .send({ message: "não foi ossivel atualizar a noticia" });
+        .send({ message: "não foi Possivel atualizar a noticia" });
     };
 
     return reply.status(200).send({ message: "noticia atualizada com sucesso" });
   }catch(err){
     console.error('error while updateNews news:', err);
     reply.status(500).send({ message: "An error occurred while updateNews the news" });
+  };
+};
+
+export async function deleteNewsById(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply){ //OK
+  try{
+    const idNews = request.params;
+    const userID = request.user?.id;
+
+    const news = await findByIdServiceSimple(idNews);
+
+    if(!news) return reply.status(500).send({ message: "it was not possible to perform this task" });
+
+    if (news?.user.toString() != userID?.toString()) {
+      return reply
+        .status(404)
+        .send({ message: "you have not permission for delete this user" });
+    };
+
+    const deleteResponse: IResponseMessageandOK | undefined = await deleteNewsByIdService(idNews);
+    if(!deleteResponse){
+      return reply.status(500).send({
+        message: "an error occurred while trying to delete user",
+        OK: false,
+      });
+    }; 
+
+    const { message, OK } = deleteResponse;
+
+    return reply.send({ message, OK });
+  }catch(err){
+    console.error(`an error occurred while deleteNewsById this news: ${err}`);
+    return reply.status(500).send({err: 'an error occurred while deleteNewsById this news'});
+  };
+};
+
+export async function likeNewsById(request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply) { //OK
+  try{
+    const idNews = request.params;
+    const userID = request.user?.id;
+    if(!userID) return reply.send({ message: 'o user não está autenticado.', OK: false });
+
+    const { message, OK, ok}  = await likeNewsByIdService(idNews, userID);
+    if (ok === false) {
+      await deleteLikeNewsByIdService(idNews, userID);
+      return reply.status(200).send({ message: `post DESCURTIDO com sucesso.` });
+    }
+    
+    return reply.send({ message, OK });
+  }catch(err){
+    console.error(`an error occurred while deleteNewslikeNewsByIdById this news: ${err}`);
+    return reply.status(500).send({err: 'an error occurred while likeNewsById this news'});
+  };
+};
+
+export async function addComment(request: FastifyRequest <{ Params: IParamsId, Body: IBodyCommentAdd }>, reply: FastifyReply) {
+  try{
+    const userID = request.user?.id;
+    const idNews = request.params;
+    const commentBody = request.body;
+
+    const addCommentResponse = await addCommentService(userID, idNews, commentBody);
+    if(!addCommentResponse){
+      return reply.status(500).send({
+        message: "an error occurred while trying to addComment in this news",
+        OK: false,
+      });
+    }; 
+
+    const { message, OK } = addCommentResponse;
+    
+    return reply.status(200).send({ message, OK });
+  }catch(err){
+    console.error(`an error occurred while addComment this news: ${err}`);
+    return reply.status(500).send({err: 'an error occurred while addComment this news'});
   };
 };

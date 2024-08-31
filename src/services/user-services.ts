@@ -1,5 +1,5 @@
 import { User } from "../models/user-model";
-import { IResponseCreateService, IResponseGetById, UserUpdateBody } from "../types/user.types";
+import { IResponseCreateService, UserUpdateBody } from "../types/user.types";
 import jwt from 'jsonwebtoken';
 
 export const statusFailed = (messageError: string) => {

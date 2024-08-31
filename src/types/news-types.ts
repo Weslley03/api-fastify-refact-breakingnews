@@ -1,24 +1,27 @@
 import { IParamsId } from "./user.types";
 
-export interface NewsCreateBody {
+export interface NewsCreateBody { //OK
   title: string;
   text: string;
   banner?: string;
 };
 
-export interface IResponseCreateService {
+export interface IResponseMessageandOK { //OK
   message: string;
   OK: boolean;
 };
 
-export interface IComment {
-  commentId: string;
-  userId: string;
-  comment: string;
-  createdAt: any;
+export interface IResponseLikeNewsById { //OK
+  message: string;
+  OK: boolean;
+  ok: boolean;
 }
 
-export interface INewsDocument {
+export interface IBodyCommentAdd { //OK
+  comment: string;
+}
+
+export interface INewsDocument { //OK
   _id: string;
   title: string;
   text: string;
@@ -34,11 +37,6 @@ export interface INewsDocument {
     username: string;
     avatar: string;
   };
-};
-
-export interface IUpdateValidation {
-  _id: string;
-  user: string;
 };
 
 export interface IMyNews {
@@ -83,5 +81,7 @@ export interface NewsUpdateBody {
   text?: string;
   banner?: string;
 };
+
+export type NewsDocumentsResponse = INewsDocument & IResponseMessageandOK;
 
 export type CombinedParamsForRemoveComment = INewsIdParams & CommentIdParams & IParamsId;
