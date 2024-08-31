@@ -17,6 +17,10 @@ export interface IResponseLikeNewsById { //OK
   ok: boolean;
 }
 
+export interface IBodyCommentAdd { //OK
+  comment: string;
+}
+
 export interface IComment {
   commentId: string;
   userId: string;

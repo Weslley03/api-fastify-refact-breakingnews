@@ -1,5 +1,5 @@
 import { INews, News } from "../models/news-model";
-import { CombinedParamsForRemoveComment, INewsDocument, IResponseLikeNewsById, IResponseMessageandOK, IUpdateNewsBody, NewsUpdateBody } from "../types/news-types";
+import { CombinedParamsForRemoveComment, IBodyCommentAdd, INewsDocument, IResponseLikeNewsById, IResponseMessageandOK, IUpdateNewsBody, NewsUpdateBody } from "../types/news-types";
 import { statusFailed } from "./user-services";
 import { IParamsId } from "../types/user.types";
 
@@ -197,5 +197,28 @@ export async function deleteLikeNewsByIdService(idNews: IParamsId, userLiked: st
   }catch(err){
     console.error(`there was an error in the application service: ${err}`);
     return undefined;
+  };
+};
+
+export async function addCommentService(userID: string | undefined, idNews: IParamsId, commentBody: IBodyCommentAdd): Promise<IResponseMessageandOK>{ //OK
+  try{
+    const IDNEWS = idNews.id.toString();
+    const IDUSER = userID?.toString();
+    const COMMENTBODY = commentBody.comment;
+    const commentId = Math.floor(Date.now() * Math.random()).toString(36);
+
+    const response = await News.findByIdAndUpdate( { _id: IDNEWS }, { $push: { comments: { commentId, IDUSER, COMMENTBODY, createdAt: new Date()} } } );
+    if (!response) return statusFailed('could not addCommentService news');
+
+    return {
+      message: 'comment adding',
+      OK: true,
+    };
+  }catch(err){
+    console.error(`there was an error in the application service: ${err}`);
+    return {
+      message: 'there was an error in the application service:',
+      OK: false,
+    };
   };
 };

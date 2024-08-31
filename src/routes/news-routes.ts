@@ -15,6 +15,7 @@ import {
   removeComment, 
   updateNews,
   likeNewsById,
+  addComment,
 } from '../controllers/news-controllers';
 
 async function newsRoutes(fastify:FastifyInstance) {
@@ -31,6 +32,7 @@ async function newsRoutes(fastify:FastifyInstance) {
   fastify.patch("/upadate/:id", { preHandler: authPlugin }, updateNews);
   fastify.delete("/:id", { preHandler: authPlugin }, deleteNewsById);
   fastify.patch("/like/:id", { preHandler: authPlugin }, likeNewsById);
+  fastify.patch("/comment/:id", { preHandler: authPlugin }, addComment);
 };
 
 export default newsRoutes;  

@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { CombinedParamsForRemoveComment, INewsDocument, IResponseMessageandOK, IUpdateNewsBody, IUpdateValidation, NewsCreateBody, NewsUpdateBody, PaginationQuery, TitleParams } from "../types/news-types";
-import { countNewsServic, createNewsService, deleteLikeNewsByIdService, deleteNewsByIdService, findAllNewsService, findByIdService, findByIdServiceSimple, findByTitleService, findByUserService, findCommentById, findTopNewsService, likeNewsByIdService, removeCommentService, updateNewsService } from "../services/news-services";
+import { CombinedParamsForRemoveComment, IBodyCommentAdd, INewsDocument, IResponseMessageandOK, IUpdateNewsBody, IUpdateValidation, NewsCreateBody, NewsUpdateBody, PaginationQuery, TitleParams } from "../types/news-types";
+import { addCommentService, countNewsServic, createNewsService, deleteLikeNewsByIdService, deleteNewsByIdService, findAllNewsService, findByIdService, findByIdServiceSimple, findByTitleService, findByUserService, findCommentById, findTopNewsService, likeNewsByIdService, removeCommentService, updateNewsService } from "../services/news-services";
 import { Readable } from "stream";
 import { IParamsId } from "../types/user.types";
 
@@ -354,7 +354,7 @@ export async function deleteNewsById(request: FastifyRequest<{ Params: IParamsId
     const deleteResponse: IResponseMessageandOK | undefined = await deleteNewsByIdService(idNews);
     if(!deleteResponse){
       return reply.status(500).send({
-        message: "an error occurred while trying to register",
+        message: "an error occurred while trying to delete user",
         OK: false,
       });
     }; 
@@ -384,5 +384,28 @@ export async function likeNewsById(request: FastifyRequest<{ Params: IParamsId }
   }catch(err){
     console.error(`an error occurred while deleteNewslikeNewsByIdById this news: ${err}`);
     return reply.status(500).send({err: 'an error occurred while likeNewsById this news'});
+  };
+};
+
+export async function addComment(request: FastifyRequest <{ Params: IParamsId, Body: IBodyCommentAdd }>, reply: FastifyReply) {
+  try{
+    const userID = request.user?.id;
+    const idNews = request.params;
+    const commentBody = request.body;
+
+    const addCommentResponse = await addCommentService(userID, idNews, commentBody);
+    if(!addCommentResponse){
+      return reply.status(500).send({
+        message: "an error occurred while trying to addComment in this news",
+        OK: false,
+      });
+    }; 
+
+    const { message, OK } = addCommentResponse;
+    
+    return reply.status(200).send({ message, OK });
+  }catch(err){
+    console.error(`an error occurred while addComment this news: ${err}`);
+    return reply.status(500).send({err: 'an error occurred while addComment this news'});
   };
 };
