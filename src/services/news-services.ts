@@ -1,5 +1,5 @@
 import { INews, News } from "../models/news-model";
-import { CombinedParamsForRemoveComment, IBodyCommentAdd, INewsDocument, IResponseLikeNewsById, IResponseMessageandOK, IUpdateNewsBody, NewsUpdateBody } from "../types/news-types";
+import { CombinedParamsForRemoveComment, IBodyCommentAdd, IMyNews, INewsDocument, IResponseLikeNewsById, IResponseMessageandOK, IUpdateNewsBody, NewsDocumentsResponse, NewsUpdateBody } from "../types/news-types";
 import { statusFailed } from "./user-services";
 import { IParamsId } from "../types/user.types";
 
@@ -36,12 +36,47 @@ export async function findAllNewsService(limit:number, offset: number): Promise<
   };
 };
 
-export async function findTopNewsService(): Promise<INewsDocument | null> {
+export async function findTopNewsService(): Promise<NewsDocumentsResponse | IMyNews> {
   try{
-    return News.findOne().sort({_id: -1}).populate('user') as Promise<INewsDocument | null>
+    const topNewsResponse = await News.findOne().sort({_id: -1}).populate('user') as unknown as INewsDocument
+    if(!topNewsResponse) throw new Error('top news response is null or undefined.');
+
+    return {
+      _id: topNewsResponse._id,
+      title: topNewsResponse.title,
+      text: topNewsResponse.text,
+      banner: topNewsResponse.banner,
+      likes: topNewsResponse.likes, 
+      comments: topNewsResponse.comments,
+      user: {
+        username: topNewsResponse.user.username,
+        avatar: topNewsResponse.user.avatar,
+      },
+      message: 'error fetching news articles',
+      OK: false,
+    }
+
   }catch(err){
     console.error('error fetching news articles:', err);
-    throw new Error('failed to fetch news articles');
+    return{
+      _id: '',
+      title: '',
+      text: '',
+      banner: '',
+      likes: '', 
+      comments: {
+        commentId: '',
+        userId: '',
+        comment: '',
+        createdAt: '',
+      },
+      user: {
+        username: '',
+        avatar: '',
+      },
+      message: 'error fetching news articles',
+      OK: false,
+    }
   };
 };
 

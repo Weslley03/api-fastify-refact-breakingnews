@@ -110,7 +110,6 @@ export async function findTopNews(request: FastifyRequest, reply: FastifyReply){
         banner: topNews.banner,
         likes: topNews.likes,
         comments: topNews.comments,
-        //name: topNews.user.name,
         userName: topNews.user.username,
         userAvatar: topNews.user.avatar,
       },

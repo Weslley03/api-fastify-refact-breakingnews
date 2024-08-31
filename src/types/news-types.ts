@@ -21,14 +21,7 @@ export interface IBodyCommentAdd { //OK
   comment: string;
 }
 
-export interface IComment {
-  commentId: string;
-  userId: string;
-  comment: string;
-  createdAt: any;
-}
-
-export interface INewsDocument {
+export interface INewsDocument { //OK
   _id: string;
   title: string;
   text: string;
@@ -45,6 +38,17 @@ export interface INewsDocument {
     avatar: string;
   };
 };
+
+export type NewsDocumentsResponse = INewsDocument & IResponseMessageandOK; //OK
+
+
+
+export interface IComment {
+  commentId: string;
+  userId: string;
+  comment: string;
+  createdAt: any;
+}
 
 export interface IUpdateValidation {
   _id: string;
