@@ -2,6 +2,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { UserLoginBody } from "../types/user.types";
 import { loginUserService } from "../services/auth-services";
 import { generateToken } from "../services/user-services";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 export async function userLogin(request: FastifyRequest<{ Body: UserLoginBody }>, reply: FastifyReply){
   try{
@@ -17,7 +19,11 @@ export async function userLogin(request: FastifyRequest<{ Body: UserLoginBody }>
     if(!OK) return reply.status(400).send({ message, OK });
     
     const token = await generateToken(user._id);
-    return reply.status(200).send({ token, message, OK });
+    if(!token) {
+      return reply.status(400).send({ message: 'we were unable to generate your security token.' });
+    } else {
+      return reply.status(200).send({ token, message, OK });
+    };
   }catch(err){
     console.error(`an error occurred while login the user: ${err}`);
     return reply.status(500).send({err: 'an error occurred while login the userr'})

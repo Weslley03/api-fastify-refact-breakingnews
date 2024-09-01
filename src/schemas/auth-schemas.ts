@@ -26,6 +26,7 @@ export const loginUserServiceSchema = {
             background: { type: 'string' },
           },
         },
+        token: { type: 'string', description: 'token success generated' },
         message: { type: 'string', description: 'Login success message' },
         OK: { type: 'boolean', description: 'Indicates successful login' },
       },
