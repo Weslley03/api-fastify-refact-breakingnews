@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { GetByIdService } from '../services/user-services';
 import { verify, JwtPayload  } from "jsonwebtoken";
-import dotenv from "dotenv";
 import { IParamsId } from '../types/user.types';
+import dotenv from "dotenv";
 dotenv.config();
 
 interface JwtPayloadWithId extends JwtPayload {
