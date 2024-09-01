@@ -2,14 +2,15 @@ import { FastifyInstance } from 'fastify';
 import { userCreate, userUpdate, userFindById, userFindAll, userRemove } from '../controllers/user-controllers';
 import { authPlugin } from '../plugins/myPlugin';
 import { IParamsId, UserCreateBody, UserUpdateBody } from '../types/user.types';
+import { createUserServiceSchema, deleteUserServiceSchema, findAllUserServiceSchema, GetByIdServiceSchema, updateUserServiceSchema } from '../schemas/users-schemas';
 
 async function userRoutes(fastify:FastifyInstance) {
-  fastify.get('/', userFindAll);
-  fastify.get<{ Params: IParamsId }>('/findbyidsimple/:id?', userFindById);
-  fastify.get('/findById/:id?', { preHandler: authPlugin }, userFindById)
-  fastify.post<{ Body: UserCreateBody }>('/create', userCreate);
-  fastify.patch<{ Body: UserUpdateBody, Params: IParamsId }>('/findByIdUpdate/:id?', { preHandler: authPlugin }, userUpdate);
-  fastify.delete<{ Params: IParamsId }>('/findByIdDelete/:id?', userRemove)
+  fastify.get('/', { schema: findAllUserServiceSchema }, userFindAll);
+  fastify.get<{ Params: IParamsId }>('/findbyidsimple/:id?', { schema: GetByIdServiceSchema }, userFindById);
+  fastify.get('/findById/:id?', { schema: GetByIdServiceSchema, preHandler: authPlugin }, userFindById)
+  fastify.post<{ Body: UserCreateBody }>('/create', { schema: createUserServiceSchema }, userCreate);
+  fastify.patch<{ Body: UserUpdateBody, Params: IParamsId }>('/findByIdUpdate/:id?', { schema: updateUserServiceSchema, preHandler: authPlugin }, userUpdate);
+  fastify.delete<{ Params: IParamsId }>('/findByIdDelete/:id?', { schema: deleteUserServiceSchema }, userRemove)
 };
 
 export default userRoutes;  
