@@ -21,6 +21,7 @@ export async function generateToken(userId: string): Promise<string | undefined>
   try{
     const SECRET_JWT = process.env.SECRET_JWT;
     if(!SECRET_JWT) throw new Error('SECRET_KEY is not defined in the environment variables');
+    console.log('user service: ', SECRET_JWT)
     return jwt.sign({userId: userId}, SECRET_JWT, {expiresIn: 86400})
   }catch(err){
     console.error('houve um erro na execução da função generateToken', err);
