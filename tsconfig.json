@@ -12,7 +12,8 @@
   "include": [
     "*.ts",
     "src/**/*.ts",
-    "types/fastify.d.ts"
+    "types/fastify.d.ts",
+    "types/fastify-swagger.d.ts"
   ],
   "exclude": [
     "node_modules"

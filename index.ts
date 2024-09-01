@@ -14,6 +14,9 @@ server.register(cors, {
 //database conection function
 connectDB();
 
+import { docRoutes } from './src/routes/doc-routes';
+docRoutes(server);
+
 import userRoutes from './src/routes/user-routes';
 server.register(userRoutes, { prefix: '/users' });
 

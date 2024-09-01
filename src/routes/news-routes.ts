@@ -17,22 +17,23 @@ import {
   likeNewsById,
   addComment,
 } from '../controllers/news-controllers';
+import { addCommentSchema, deleteNewsByIdSchema, findByTitleSchema, findByUserSchema, findCommentByIdNewsSchema, findNewsByIdSchema, findTopNewsSchema, likeCheckSchema, likeNewsByIdSchema, newsCreateSchema, newsFindAllSchema, removeCommentSchema, updateNewsSchema } from '../schemas/news-schemas';
 
 async function newsRoutes(fastify:FastifyInstance) {
-  fastify.post<{ Body: NewsCreateBody, Params: IParamsId }>('/create', { preHandler: authPlugin }, newsCreate);
-  fastify.get("/getall", newsFindAll);
-  fastify.get("/top", findTopNews);
-  fastify.get("/search", findByTitle);
-  fastify.get("/byUser", { preHandler: authPlugin }, findByUser);
-  fastify.get('/comment/commentbyidnews/:id', findCommentByIdNews);
-  fastify.get('/likecheck/:id', { preHandler: authPlugin }, likeCheck);
-  fastify.patch<{ Params: CombinedParamsForRemoveComment }>("/comment/:idNews/:commentId", { preHandler: authPlugin }, removeComment); 
-  fastify.get("/findId/:id", { preHandler: authPlugin }, findNewsById);
-  fastify.get("/findnewsidsimple/:id", findNewsById);
-  fastify.patch("/upadate/:id", { preHandler: authPlugin }, updateNews);
-  fastify.delete("/:id", { preHandler: authPlugin }, deleteNewsById);
-  fastify.patch("/like/:id", { preHandler: authPlugin }, likeNewsById);
-  fastify.patch("/comment/:id", { preHandler: authPlugin }, addComment);
+  fastify.post<{ Body: NewsCreateBody, Params: IParamsId }>('/create', { schema: newsCreateSchema, preHandler: authPlugin }, newsCreate);
+  fastify.get("/getall", { schema: newsFindAllSchema }, newsFindAll);
+  fastify.get("/top", { schema: findTopNewsSchema }, findTopNews);
+  fastify.get("/search", { schema: findByTitleSchema }, findByTitle);
+  fastify.get("/byUser", { schema: findByUserSchema, preHandler: authPlugin }, findByUser);
+  fastify.get('/comment/commentbyidnews/:id', { schema: findCommentByIdNewsSchema }, findCommentByIdNews);
+  fastify.get('/likecheck/:id', { schema: likeCheckSchema, preHandler: authPlugin }, likeCheck);
+  fastify.patch<{ Params: CombinedParamsForRemoveComment }>("/comment/:idNews/:commentId", { schema: removeCommentSchema, preHandler: authPlugin }, removeComment); 
+  fastify.get("/findId/:id", { schema: findNewsByIdSchema, preHandler: authPlugin }, findNewsById);
+  fastify.get("/findnewsidsimple/:id", { schema: findByUserSchema}, findNewsById);
+  fastify.patch("/upadate/:id", { schema: updateNewsSchema, preHandler: authPlugin }, updateNews);
+  fastify.delete("/:id", { schema: deleteNewsByIdSchema, preHandler: authPlugin }, deleteNewsById);
+  fastify.patch("/like/:id", { schema: likeNewsByIdSchema, preHandler: authPlugin }, likeNewsById);
+  fastify.patch("/comment/:id", { schema: addCommentSchema, preHandler: authPlugin }, addComment);
 };
 
 export default newsRoutes;  
