@@ -7,7 +7,7 @@ dotenv.config();
 const server = fastify();
 
 server.register(cors, {
-  origin: '*',
+  origin: 'https://api-breaknews-5dmg.onrender.com',
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
