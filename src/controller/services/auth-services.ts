@@ -1,4 +1,4 @@
-import { IUser, User } from "../models/user-model"
+import { IUser, User } from "../../model/models-db/user-model"
 import bcrypt from "bcrypt";
 import { statusFailed } from "./user-services";
 

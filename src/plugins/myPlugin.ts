@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { GetByIdService } from '../services/user-services';
+import { GetByIdService } from '../controller/services/user-services';
 import { verify, JwtPayload  } from "jsonwebtoken";
-import { IParamsId } from '../types/user.types';
+import { IParamsId } from '../model/types/user.types';
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -11,7 +11,6 @@ interface JwtPayloadWithId extends JwtPayload {
 
 const SECRET_JWT = process.env.SECRET_JWT; 
 if(!SECRET_JWT) throw new Error('SECRET_KEY is not defined in the environment variables');
-console.log('plugin: ', SECRET_JWT)
 export const authPlugin = async (request: FastifyRequest<{ Params: IParamsId }>, reply: FastifyReply) => {
   const { authorization } = request.headers;
   if(!authorization) return reply.status(404).send("header without authorization");

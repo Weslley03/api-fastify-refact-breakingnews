@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { IParamsId, UserCreateBody, UserUpdateBody } from "../types/user.types";
+import { IParamsId, UserCreateBody, UserUpdateBody } from "../../model/types/user.types";
 import { 
   generateToken, 
   createUserService, 

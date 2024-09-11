@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { authPlugin } from '../plugins/myPlugin';
-import { CombinedParamsForRemoveComment, NewsCreateBody } from '../types/news-types';
-import { IParamsId } from '../types/user.types';
+import { CombinedParamsForRemoveComment, NewsCreateBody } from '../model/types/news-types';
+import { IParamsId } from '../model/types/user.types';
 import { 
   deleteNewsById,
   findByTitle, 
@@ -16,8 +16,8 @@ import {
   updateNews,
   likeNewsById,
   addComment,
-} from '../controllers/news-controllers';
-import { addCommentSchema, deleteNewsByIdSchema, findByTitleSchema, findByUserSchema, findCommentByIdNewsSchema, findNewsByIdSchema, findTopNewsSchema, likeCheckSchema, likeNewsByIdSchema, newsCreateSchema, newsFindAllSchema, removeCommentSchema, updateNewsSchema } from '../schemas/news-schemas';
+} from '../controller/controllers/news-controllers';
+import { addCommentSchema, deleteNewsByIdSchema, findByTitleSchema, findByUserSchema, findCommentByIdNewsSchema, findNewsByIdSchema, findTopNewsSchema, likeCheckSchema, likeNewsByIdSchema, newsCreateSchema, newsFindAllSchema, removeCommentSchema, updateNewsSchema } from '../model/schemas/news-schemas';
 
 async function newsRoutes(fastify:FastifyInstance) {
   fastify.post<{ Body: NewsCreateBody, Params: IParamsId }>('/create', { schema: newsCreateSchema, preHandler: authPlugin }, newsCreate);

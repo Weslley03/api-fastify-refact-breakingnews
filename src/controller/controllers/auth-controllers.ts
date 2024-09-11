@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { UserLoginBody } from "../types/user.types";
+import { UserLoginBody } from "../../model/types/user.types";
 import { loginUserService } from "../services/auth-services";
 import { generateToken } from "../services/user-services";
 import * as dotenv from "dotenv";

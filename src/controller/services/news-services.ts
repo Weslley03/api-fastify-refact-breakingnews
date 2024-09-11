@@ -1,6 +1,6 @@
-import { News } from "../models/news-model";
+import { News } from "../../model/models-db/news-model";
 import { statusFailed } from "./user-services";
-import { IParamsId } from "../types/user.types";
+import { IParamsId } from "../../model/types/user.types";
 import { 
   CombinedParamsForRemoveComment, 
   IBodyCommentAdd, 
@@ -11,7 +11,7 @@ import {
   IUpdateNewsBody, 
   NewsDocumentsResponse, 
   NewsUpdateBody 
-} from "../types/news-types";
+} from "../../model/types/news-types"; //../types/news-types
 
 export async function createNewsService(bodyData: object): Promise<IResponseMessageandOK | undefined>{
   try{

@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { userCreate, userUpdate, userFindById, userFindAll, userRemove } from '../controllers/user-controllers';
+import { userCreate, userUpdate, userFindById, userFindAll, userRemove } from '../controller/controllers/user-controllers';
 import { authPlugin } from '../plugins/myPlugin';
-import { IParamsId, UserCreateBody, UserUpdateBody } from '../types/user.types';
-import { createUserServiceSchema, deleteUserServiceSchema, findAllUserServiceSchema, GetByIdServiceSchema, updateUserServiceSchema } from '../schemas/users-schemas';
+import { IParamsId, UserCreateBody, UserUpdateBody } from '../model/types/user.types';
+import { createUserServiceSchema, deleteUserServiceSchema, findAllUserServiceSchema, GetByIdServiceSchema, updateUserServiceSchema } from '../model/schemas/users-schemas';
 
 async function userRoutes(fastify:FastifyInstance) {
   fastify.get('/', { schema: findAllUserServiceSchema }, userFindAll);

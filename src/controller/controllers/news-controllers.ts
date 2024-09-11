@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { Readable } from "stream";
-import { IParamsId } from "../types/user.types";
+import { IParamsId } from "../../model/types/user.types";
 import { 
   CombinedParamsForRemoveComment, 
   IBodyCommentAdd, 
@@ -11,7 +11,7 @@ import {
   NewsUpdateBody, 
   PaginationQuery, 
   TitleParams 
-} from "../types/news-types";
+} from "../../model/types/news-types";
 import { 
   addCommentService, 
   countNewsServic, 
